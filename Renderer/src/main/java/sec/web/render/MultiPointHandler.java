@@ -7,7 +7,6 @@ import android.util.SparseArray;
 import armyc2.c2sd.graphics2d.*;
 
 import java.util.Map;
-import sec.geo.utilities.StringBuilder;
 import sec.web.render.utilities.JavaRendererUtilities;
 import sec.web.render.utilities.LineInfo;
 import sec.web.render.utilities.SymbolInfo;
