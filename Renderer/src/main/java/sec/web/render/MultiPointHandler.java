@@ -764,19 +764,22 @@ public class MultiPointHandler {
                 }*/
 
                 jsonContent = KMLize(id, name, description, symbolCode, shapes, modifiers, ipc, normalize, textColor);
+                jsonOutput.append(jsonContent);
 
                 //if there's a symbol fill or line pattern, add to KML//////////
                 if (symbolModifiers.indexOfKey(SYMBOL_FILL_IDS) >= 0
                         || symbolModifiers.indexOfKey(SYMBOL_LINE_IDS) >= 0) {
                     //String fillKML = AddImageFillToKML(tgPoints, jsonContent, mSymbol, ipc, normalize);
                     String fillKML = AddImageFillToKML(tgPoints, jsonContent, symbolModifiers, ipc, normalize);
-                    if(fillKML != null && fillKML.equals("")==false)
+                    //if(fillKML != null && fillKML.equals("")==false)
+                    if(fillKML != null && !fillKML.isEmpty())
                     {
-                        jsonContent = fillKML;
+                        //jsonContent = fillKML;
+                        jsonOutput.append(fillKML);
                     }
                 }///end if symbol fill or line pattern//////////////////////////
 
-                jsonOutput.append(jsonContent);
+                //jsonOutput.append(jsonContent);
             }
             else if (format == 2)
             {
@@ -1378,11 +1381,15 @@ public class MultiPointHandler {
                 {
                     //String fillKML = AddImageFillToKML(tgPoints, jsonContent, mSymbol, ipc, normalize);
                     String fillKML = AddImageFillToKML(tgPoints, jsonContent, symbolModifiers, ipc, normalize);
+                    //if(fillKML != null && fillKML.equals("")==false)
                     if(fillKML != null && !fillKML.isEmpty())
                     {
+                        //jsonContent = fillKML;
                         jsonOutput.append(fillKML);
                     }
                 }///end if symbol fill or line pattern//////////////////////////
+                
+                //jsonOutput.append(jsonContent);
 
 //                if(mSymbol.getModifierMap().indexOfKey(MilStdAttributes.LookAtTag) &&
 //                        mSymbol.getModifierMap().get(MilStdAttributes.LookAtTag).toLowerCase().equals("true"))
