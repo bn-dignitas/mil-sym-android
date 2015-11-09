@@ -58,6 +58,8 @@ public class MultiPointHandler {
      * 2525C, which includes 2525Bch2 & USAS 13/14
      */
     public static final int Symbology_2525C = 1;
+    private final static String cdataStart = "<![CDATA[";
+    private final static String cdataEnd = "]]>";
 
     public static String getModififerKML(String id,
             String name,
@@ -2060,12 +2062,9 @@ public class MultiPointHandler {
 
         ShapeInfo tempModifier = null;
 
-        String cdataStart = "<![CDATA[";
-        String cdataEnd = "]]>";
-
         int len = shapes.size();
-        kml.append("<Folder id=\"" + id + "\">");
-        kml.append("<name>" + cdataStart + name + cdataEnd + "</name>");
+        kml.append("<Folder id=\"").append(id).append("\">");
+        kml.append("<name>").append(cdataStart).append(name).append(cdataEnd).append("</name>");
         kml.append("<visibility>1</visibility>");
         for (int i = 0; i < len; i++) {
 
@@ -2483,8 +2482,6 @@ public class MultiPointHandler {
                 bottomRight = NormalizeCoordToGECoord(bottomRight);
             }
 
-            String cdataStart = "<![CDATA[";
-            String cdataEnd = "]]>";
             //build kml
             sb.append("<GroundOverlay>");
             sb.append("<name>symbol fill</name>");
@@ -2600,11 +2597,6 @@ public class MultiPointHandler {
 
         java.lang.StringBuilder kml = new java.lang.StringBuilder();
 
-        Color lineColor = null;
-        Color fillColor = null;
-        String googleLineColor = null;
-        String googleFillColor = null;
-
         String lineStyleId = "lineColor";
 
         BasicStroke stroke = null;
@@ -2612,16 +2604,13 @@ public class MultiPointHandler {
 
         symbolCode = JavaRendererUtilities.normalizeSymbolCode(symbolCode);
 
-        String cdataStart = "<![CDATA[";
-        String cdataEnd = "]]>";
-
         kml.append("<Placemark>");//("<Placemark id=\"" + id + "_mg" + "\">");
-        kml.append("<description>" + cdataStart + "<b>" + name + "</b><br/>" + "\n" + description + cdataEnd + "</description>");
-        kml.append("<Style id=\"" + lineStyleId + "\">");
+        kml.append("<description>").append(cdataStart).append("<b>").append(name).append("</b><br/>").append("\n").append(description).append(cdataEnd).append("</description>");
+        kml.append("<Style id=\"").append(lineStyleId).append("\">");
 
-        lineColor = shapeInfo.getLineColor();
+        Color lineColor = shapeInfo.getLineColor();
         if (lineColor != null) {
-            googleLineColor = Integer.toHexString(shapeInfo.getLineColor().toARGB());
+            String googleLineColor = Integer.toHexString(shapeInfo.getLineColor().toARGB());
 
             stroke = (BasicStroke) shapeInfo.getStroke();
 
@@ -2632,20 +2621,20 @@ public class MultiPointHandler {
             googleLineColor = JavaRendererUtilities.ARGBtoABGR(googleLineColor);
 
             kml.append("<LineStyle>");
-            kml.append("<color>" + googleLineColor + "</color>");
+            kml.append("<color>").append(googleLineColor).append("</color>");
             kml.append("<colorMode>normal</colorMode>");
-            kml.append("<width>" + String.valueOf(lineWidth) + "</width>");
+            kml.append("<width>").append(String.valueOf(lineWidth)).append("</width>");
             kml.append("</LineStyle>");
         }
 
-        fillColor = shapeInfo.getFillColor();
+        Color fillColor = shapeInfo.getFillColor();
         if (fillColor != null) {
-            googleFillColor = Integer.toHexString(shapeInfo.getFillColor().toARGB());
+            String googleFillColor = Integer.toHexString(shapeInfo.getFillColor().toARGB());
 
             googleFillColor = JavaRendererUtilities.ARGBtoABGR(googleFillColor);
 
             kml.append("<PolyStyle>");
-            kml.append("<color>" + googleFillColor + "</color>");
+            kml.append("<color>").append(googleFillColor).append("</color>");
             kml.append("<colorMode>normal</colorMode>");
             kml.append("<fill>1</fill>");
             if (lineColor != null) {
@@ -2996,27 +2985,24 @@ public class MultiPointHandler {
 
         String text = shapeInfo.getModifierString();
 
-        String cdataStart = "<![CDATA[";
-        String cdataEnd = "]]>";
-
         String color = Integer.toHexString(textColor.toARGB());
         color = JavaRendererUtilities.ARGBtoABGR(color);
         float kmlScale = RendererSettings.getInstance().getKMLLabelScale();
 
-        if (kmlScale > 0 && text != null && text.equals("") == false) {
+        if (kmlScale > 0 && text != null && !text.isEmpty()) {
             kml.append("<Placemark>");//("<Placemark id=\"" + id + "_lp" + i + "\">");
-            kml.append("<name>" + cdataStart + text + cdataEnd + "</name>");
+            kml.append("<name>").append(cdataStart).append(text).append(cdataEnd).append("</name>");
             kml.append("<Style>");
             kml.append("<IconStyle>");
             kml.append("<scale>.7</scale>");
-            kml.append("<heading>" + angle + "</heading>");
+            kml.append("<heading>").append(angle).append("</heading>");
             kml.append("<Icon>");
             kml.append("<href></href>");
             kml.append("</Icon>");
             kml.append("</IconStyle>");
             kml.append("<LabelStyle>");
-            kml.append("<color>" + color + "</color>");
-            kml.append("<scale>" + String.valueOf(kmlScale) +"</scale>");
+            kml.append("<color>").append(color).append("</color>");
+            kml.append("<scale>").append(String.valueOf(kmlScale)).append("</scale>");
             kml.append("</LabelStyle>");
             kml.append("</Style>");
             kml.append("<Point>");
