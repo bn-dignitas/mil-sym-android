@@ -352,11 +352,10 @@ public class SinglePointSVGRenderer
 			}
 			iinew = null;
 
-			// process test modifiers
+			// process text modifiers
 			if (hasTextModifiers)
 			{
-				iinew = ModifierRenderer.processUnitTextModifiers(ii, symbolID,
-						modifiers, hasTextModifiers, attributes);
+				iinew = ModifierRenderer.processUnitTextModifiers(ii, symbolID,modifiers, attributes);
 			}
 
 			if (iinew != null)

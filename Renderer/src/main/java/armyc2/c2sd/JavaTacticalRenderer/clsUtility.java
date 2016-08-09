@@ -108,6 +108,8 @@ public final class clsUtility {
         int result = -1;
         switch (lineType) {
             case TacticalLines.RECTANGULAR:
+            case TacticalLines.PBS_RECTANGLE:
+            case TacticalLines.PBS_SQUARE:
                 result = 1; //was 3
                 break;
             case TacticalLines.BBS_POINT:
@@ -336,6 +338,8 @@ public final class clsUtility {
             case TacticalLines.BS_LINE:
             case TacticalLines.BS_CROSS:
             case TacticalLines.BS_ELLIPSE:
+            case TacticalLines.PBS_ELLIPSE:
+            case TacticalLines.PBS_CIRCLE:
             case TacticalLines.BS_RECTANGLE:
             case TacticalLines.BBS_AREA:
             case TacticalLines.BBS_LINE:
@@ -748,6 +752,8 @@ public final class clsUtility {
                         switch(lineType)
                         {
                             case TacticalLines.BS_ELLIPSE:
+                            case TacticalLines.PBS_ELLIPSE:
+                            case TacticalLines.PBS_CIRCLE:
                             case TacticalLines.BS_RECTANGLE:
                             //case TacticalLines.BBS_RECTANGLE:
                                 shape.set_Fillstyle(tg.get_FillStyle());
@@ -1214,6 +1220,32 @@ public final class clsUtility {
                             shape.setFillColor(tg.get_FillColor());
                             grid.dispose();
                             break;
+                        case 7://GraphicProperties.FILL_TYPE_HORIZONTAL_PLUSSES:
+                            rect = new Rectangle2D.Double(0, 0, 8, 8);
+                            //rect = new Rectangle2D.Double(0, 0, 20, 20);
+                            grid = bi.createGraphics();
+                            grid.setColor(GetOpaqueColor(tg.get_LineColor()));
+                            grid.setStroke(new BasicStroke(2));
+                            grid.drawLine(4, 2, 4, 6);
+                            grid.drawLine(2, 4, 6, 4);
+                            tp = new TexturePaint(bi, rect);
+                            shape.setTexturePaint(tp);
+                            shape.setFillColor(tg.get_FillColor());
+                            grid.dispose();
+                            break;
+                        case 8://GraphicProperties.FILL_TYPE_XHATCH:
+                            rect = new Rectangle2D.Double(0, 0, 10, 10);
+                            //rect = new Rectangle2D.Double(0, 0, 20, 20);
+                            grid = bi.createGraphics();
+                            grid.setColor(GetOpaqueColor(tg.get_LineColor()));
+                            grid.setStroke(new BasicStroke(2));
+                            grid.drawLine(2, 2, 8, 8);                            
+                            grid.drawLine(2, 8, 8, 2);
+                            tp = new TexturePaint(bi, rect);
+                            shape.setTexturePaint(tp);
+                            shape.setFillColor(tg.get_FillColor());
+                            grid.dispose();
+                            break;
                         case 1://GraphicProperties.FILL_TYPE_SOLID:
                             //shape.set_FillColor(tg.get_FillColor());
                             break;
@@ -1271,6 +1303,8 @@ public final class clsUtility {
                     }
                     return false;
                 case TacticalLines.RECTANGULAR:
+                case TacticalLines.PBS_RECTANGLE:
+                case TacticalLines.PBS_SQUARE:
                 case TacticalLines.CIRCULAR:
                 case TacticalLines.BBS_POINT:
                 case TacticalLines.FSA_CIRCULAR:
@@ -2025,7 +2059,11 @@ public final class clsUtility {
             linetypes.put("BS_AREA--------", TacticalLines.BS_AREA);
             linetypes.put("BS_CROSS-------", TacticalLines.BS_CROSS);
             linetypes.put("BS_ELLIPSE-----", TacticalLines.BS_ELLIPSE);
+            linetypes.put("PBS_ELLIPSE----", TacticalLines.PBS_ELLIPSE);
+            linetypes.put("PBS_CIRCLE-----", TacticalLines.PBS_CIRCLE);
             linetypes.put("BS_RECTANGLE---", TacticalLines.BS_RECTANGLE);
+            linetypes.put("PBS_RECTANGLE--", TacticalLines.PBS_RECTANGLE);
+            linetypes.put("PBS_SQUARE-----", TacticalLines.PBS_SQUARE);
             //end basic shapes
             
             //buffered shapes
@@ -2526,7 +2564,23 @@ public final class clsUtility {
             {
                 strMask=str;
             }
+            else if(str.equalsIgnoreCase("PBS_ELLIPSE----"))
+            {
+                strMask=str;
+            }
+            else if(str.equalsIgnoreCase("PBS_CIRCLE-----"))
+            {
+                strMask=str;
+            }
             else if(str.equalsIgnoreCase("BS_RECTANGLE---"))
+            {
+                strMask=str;
+            }
+            else if(str.equalsIgnoreCase("PBS_RECTANGLE--"))
+            {
+                strMask=str;
+            }
+            else if(str.equalsIgnoreCase("PBS_SQUARE-----"))
             {
                 strMask=str;
             }
@@ -2655,6 +2709,8 @@ public final class clsUtility {
             switch(linetype)
             {
                 case TacticalLines.BS_ELLIPSE:
+                case TacticalLines.PBS_ELLIPSE:
+                case TacticalLines.PBS_CIRCLE:
                 case TacticalLines.BS_RECTANGLE:
                 case TacticalLines.BBS_RECTANGLE:
                 case TacticalLines.BBS_POINT:

@@ -21,6 +21,7 @@ public class TacticalGraphicIconRenderer {
 	//font size of 60 produces a 40x40 pixel image.
     private static int fontSizeForTGIcons = 60;
     private static Typeface _TGMP = null;
+	private static final Object _TGFontMutex = new Object();
 
 	public static ImageInfo getIcon(String symbolID, int size, Color color)
 	{
@@ -78,7 +79,13 @@ public class TacticalGraphicIconRenderer {
 			
 
 			if(strSymbol != null)
-				canvas.drawText(strSymbol, centerPoint.x, centerPoint.y, fillPaint);
+            {
+                synchronized(_TGFontMutex)
+                {
+                    canvas.drawText(strSymbol, centerPoint.x, centerPoint.y, fillPaint);
+                }
+            }
+
 
 			ii = new ImageInfo(bmp, centerPoint, new Rect(0, 0, size, size));
         }

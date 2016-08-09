@@ -2067,7 +2067,7 @@ public final class Channels {
                                                     }
                                                     break;
                                                 case TacticalLines.DFENCE:
-                                                    if (XCounter == 2 || XCounter == 3 || XCounter == 4) {
+                                                    if (XCounter == 3 || XCounter == 4 || XCounter == 5) {  //was 2,3 OR 4
                                                         pLinePoints[lEllipseCounter].style = 5;
                                                     }
                                                     break;

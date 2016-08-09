@@ -232,6 +232,42 @@ public final class clsRenderer {
             int n_alt=0;
             String strXAlt="";
             //construct the H1 and H2 modifiers for sector from the mss AM, AN, and X arraylists
+            if(lineType==TacticalLines.BS_ELLIPSE || lineType==TacticalLines.PBS_ELLIPSE || lineType==TacticalLines.PBS_CIRCLE)
+            {
+                ArrayList<Double> AM = milStd.getModifiers_AM_AN_X(ModifiersTG.AM_DISTANCE);
+                ArrayList<Double> AN = milStd.getModifiers_AM_AN_X(ModifiersTG.AN_AZIMUTH);
+                if(AN==null)
+                    AN=new ArrayList<Double>();
+                if(AN.size()<1)
+                    AN.add(new Double(0));
+                if(lineType==TacticalLines.PBS_CIRCLE) //circle
+                {
+                    double am0=AM.get(0);
+                    if(AM.size()==1)
+                        AM.add(am0);
+                    else if(AM.size()>=2)
+                        AM.set(1, am0);
+                }
+                if(AM != null && AM.size()>=2 && AN != null && AN.size()>=1)
+                {
+                    POINT2 ptAzimuth=new POINT2(0,0);
+                    ptAzimuth.x=AN.get(0);
+                    POINT2 ptCenter=tg.Pixels.get(0);
+                    POINT2 pt0 = mdlGeodesic.geodesic_coordinate(tg.LatLongs.get(0), AM.get(0), 90);//semi-major axis
+                    POINT2 pt1 = mdlGeodesic.geodesic_coordinate(tg.LatLongs.get(0), AM.get(1), 0);//semi-minor axis
+                    Point2D pt02d = new Point2D.Double(pt0.x, pt0.y);
+                    Point2D pt12d = new Point2D.Double(pt1.x, pt1.y);
+                    pt02d = converter.GeoToPixels(pt02d);
+                    pt12d = converter.GeoToPixels(pt12d);
+                    pt0=new POINT2(pt02d.getX(),pt02d.getY());
+                    pt1=new POINT2(pt12d.getX(),pt12d.getY());
+                    tg.Pixels=new ArrayList<POINT2>();
+                    tg.Pixels.add(ptCenter);
+                    tg.Pixels.add(pt0);
+                    tg.Pixels.add(pt1);   
+                    tg.Pixels.add(ptAzimuth);
+                }
+            }
             if (lineType == TacticalLines.RANGE_FAN_SECTOR) {
                 ArrayList<Double> AM = milStd.getModifiers_AM_AN_X(ModifiersTG.AM_DISTANCE);
                 ArrayList<Double> AN = milStd.getModifiers_AM_AN_X(ModifiersTG.AN_AZIMUTH);
@@ -669,10 +705,23 @@ public final class clsRenderer {
                     break;
             }
             //Mil-std-2525C
-            if (lineType == TacticalLines.RECTANGULAR) {
+            if (lineType == TacticalLines.RECTANGULAR || lineType == TacticalLines.PBS_RECTANGLE || lineType == TacticalLines.PBS_SQUARE) {
                 ArrayList<Double> AM = milStd.getModifiers_AM_AN_X(ModifiersTG.AM_DISTANCE);
                 ArrayList<Double> AN = milStd.getModifiers_AM_AN_X(ModifiersTG.AN_AZIMUTH);
                 //if all these conditions are not met we do not want to set any tg modifiers
+                if(lineType == TacticalLines.PBS_SQUARE) //square
+                {
+                    double am0=AM.get(0);
+                    if(AM.size()==1)
+                        AM.add(am0);
+                    else if(AM.size()>=2)
+                        AM.set(1, am0);
+                }
+                if(AN==null)                
+                    AN=new ArrayList();
+                
+                if(AN.isEmpty())
+                    AN.add(0d);
                 if (AM != null && AM.size() > 1 && AN != null && AN.size() > 0) {
                     String strT1 = Double.toString(AM.get(0));    //width
                     String strH = Double.toString(AM.get(1));     //length
@@ -977,6 +1026,7 @@ public final class clsRenderer {
             render_GE(tg, shapeInfos, modifierShapeInfos, converter, clipArea);
             mss.setSymbolShapes(shapeInfos);
             mss.setModifierShapes(modifierShapeInfos);
+            mss.set_WasClipped(tg.get_WasClipped());
         } catch (Exception exc) {
             ErrorLogger.LogException("clsRenderer", "renderWithPolylines",
                     new RendererException("Failed inside renderWithPolylines", exc));
@@ -1033,11 +1083,11 @@ public final class clsRenderer {
             ArrayList<POINT2> origPixels = null;
             ArrayList<POINT2> origLatLongs = null;
             if (clsUtilityGE.segmentColorsSet(tg)) {
-                origPixels = (ArrayList<POINT2>) tg.Pixels.clone();
-                origLatLongs = (ArrayList<POINT2>) tg.LatLongs.clone();
+                origPixels=lineutility.getDeepCopy(tg.Pixels);
+                origLatLongs=lineutility.getDeepCopy(tg.LatLongs);
             }
-            ArrayList<POINT2> origFillPixels = (ArrayList<POINT2>) tg.Pixels.clone();
-
+            ArrayList<POINT2> origFillPixels = lineutility.getDeepCopy(tg.Pixels);
+          
 //            boolean shiftLines = Channels.getShiftLines();
 //            if (shiftLines) {
 //                String affiliation = tg.get_Affiliation();
@@ -1056,6 +1106,7 @@ public final class clsRenderer {
                     clipPoints = (ArrayList<Point2D>) clipArea;
                 }
             }
+            double zoomFactor=clsUtilityGE.getZoomFactor(clipBounds, clipPoints, tg.Pixels);
             //add sub-section to test clipArea if client passes the rectangle
             boolean useClipPoints = false;    //currently not used
             if (useClipPoints == true && clipBounds != null) {
@@ -1095,7 +1146,7 @@ public final class clsRenderer {
             clsUtilityGE.setSplineLinetype(tg);
             setHostileLC(tg);
 
-            clsUtilityCPOF.SegmentGeoPoints(tg, converter);
+            clsUtilityCPOF.SegmentGeoPoints(tg, converter, zoomFactor);
             if (clipBounds != null || clipPoints != null) {
                 if (clsUtilityCPOF.canClipPoints(tg)) {
                     //check assignment
@@ -1461,7 +1512,7 @@ public final class clsRenderer {
             BufferedImage bi = new BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = bi.createGraphics();
 
-            clsUtilityCPOF.SegmentGeoPoints(tg, converter);
+            clsUtilityCPOF.SegmentGeoPoints(tg, converter, 1);
             clsUtility.FilterAXADPoints(tg, converter);
 
             //prevent vertical segments for oneway, twoway, alt

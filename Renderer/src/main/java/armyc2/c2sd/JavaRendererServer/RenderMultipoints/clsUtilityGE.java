@@ -1538,4 +1538,63 @@ public final class clsUtilityGE {
         }
         return false;
     }
+    /**
+     * Use clipping rectangle or clip points to build a zoom factor if the client zoomed in after the initial render.
+     * Multiply the geo segmenting interval by this factor.
+     * @param rect
+     * @param clipPoints
+     * @param pixels
+     * @return 
+     */
+    protected static double getZoomFactor(Rectangle2D rect, ArrayList<Point2D> clipPoints, ArrayList<POINT2>pixels)
+    {
+        double factor=-1;
+        try
+        {
+            if(pixels==null || pixels.size()<2)
+                return factor;
+            if(clipPoints==null && rect==null)
+                return factor;
+            double maxLengthPixels=0, maxLengthClipArea=0,temp=0;
+            int j=0;
+            Point2D pt2d0=null,pt2d1=null;POINT2 pt0=null, pt1=null;
+            for(j=0;j<pixels.size()-1;j++)
+            {
+               pt0=pixels.get(j);
+               pt1=pixels.get(j+1);
+               temp=lineutility.CalcDistanceDouble(pt0, pt1);
+               if(temp>maxLengthPixels)
+                   maxLengthPixels=temp;
+            }
+            temp=0;
+            if(clipPoints != null)
+            {
+                for(j=0;j<clipPoints.size()-1;j++)
+                {
+                   pt2d0=clipPoints.get(j);
+                   pt2d1=clipPoints.get(j+1);
+                   pt0=new POINT2(pt2d0.getX(),pt2d0.getY());
+                   pt1=new POINT2(pt2d1.getX(),pt2d1.getY());
+                   temp=lineutility.CalcDistanceDouble(pt0, pt1);
+                }
+            }
+            else if(rect != null)
+            {
+                temp=rect.getMaxX()-rect.getMinX();
+                if(temp < rect.getMaxY()-rect.getMinY())
+                    temp=rect.getMaxY()-rect.getMinY();
+            }
+            if(temp>maxLengthClipArea)
+                maxLengthClipArea=temp;
+            if(maxLengthPixels > 0 && maxLengthClipArea > 0)
+                factor=maxLengthClipArea/maxLengthPixels;
+        }
+        catch(Exception exc)
+        {
+            ErrorLogger.LogException(_className, "getZoomFactor",
+                    new RendererException("Failed inside getZoomFactor", exc));
+        }
+        return factor;
+    }
+    
 }

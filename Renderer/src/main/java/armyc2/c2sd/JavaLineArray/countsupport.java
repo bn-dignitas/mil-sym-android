@@ -64,6 +64,8 @@ public final class countsupport
             switch (vbiDrawThis)
             {
                 case TacticalLines.BS_ELLIPSE:
+                case TacticalLines.PBS_ELLIPSE:
+                case TacticalLines.PBS_CIRCLE:
                     count=37;
                     break;
                 case TacticalLines.BS_CROSS:
@@ -351,7 +353,7 @@ public final class countsupport
                     break;
                 case TacticalLines.FORDIF:
                     dRadius = lineutility.CalcDistanceToLineDouble(pLinePoints[0], pLinePoints[1], pLinePoints[2]);
-                    count=(int)( (dRadius/5)*3);
+                    count=(int)( (dRadius/5)*3) + 6;
                     if(clipBounds != null)
                     {
                         double width=clipBounds.getWidth();

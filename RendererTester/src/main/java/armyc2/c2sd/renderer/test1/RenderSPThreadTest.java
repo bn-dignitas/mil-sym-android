@@ -5,11 +5,18 @@
  */
 package armyc2.c2sd.renderer.test1;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.SparseArray;
 import armyc2.c2sd.renderer.MilStdIconRenderer;
 import armyc2.c2sd.renderer.utilities.ImageInfo;
+import armyc2.c2sd.renderer.utilities.MilStdAttributes;
+import armyc2.c2sd.renderer.utilities.RendererSettings;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 /**
  *
@@ -18,6 +25,9 @@ import java.util.Random;
 public class RenderSPThreadTest implements Runnable
 {
     boolean _result = true;
+    long _failCount = 0;
+    long _successCount = 0;
+    ArrayList<String> _errors = new ArrayList<String>();
 
     String _symbolID = "";
     String _name = "";
@@ -72,14 +82,162 @@ public class RenderSPThreadTest implements Runnable
     
     public void run()
     {
+
         Random r = new Random();
         String[] symbolIDs = {"SUPP-----------","SUPPT----------","SUPPV----------","SUPPT----------","SUPPL----------"};
-        _result = threadTest(symbolIDs[r.nextInt(4)], _name, _randomAffiliation);
-    }
+        _result = threadTest(symbolIDs[r.nextInt(4)], _name, _randomAffiliation);//*/
+        //S*A*MFQN--*****
+    }//*/
     
     public boolean getResult()
     {
         return _result;
+    }
+
+    public void testSecRenderer() throws InterruptedException
+    {
+        /*MilStdIconRenderer renderer = MilStdIconRenderer.getInstance();
+        String symbolCode = "S*A*MFQN--*****";
+        SparseArray<String> modifiers = new SparseArray<String>();
+        SparseArray<String> attributes = new SparseArray<String>();
+        attributes.put(MilStdAttributes.SymbologyStandard, "0");
+
+        ImageInfo imageInfo = renderer.RenderIcon(symbolCode, modifiers, attributes);
+        Bitmap bitmap = imageInfo.getImage();
+        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+        bitmap.copyPixelsToBuffer(buffer);
+        byte[] imageBytes = buffer.array();//*/
+        int len = 3136;//imageBytes.length;//3136
+        byte check = -34;//imageBytes[847];//-34
+
+        //RendererSettings.getInstance().setCacheSize(20);
+
+
+        int numberOfThreads = 20;
+        CountDownLatch doneSignal = new CountDownLatch(numberOfThreads);
+        CountDownLatch startSignal = new CountDownLatch(1);
+        ArrayList<SecImageClass> secImageClasses = new ArrayList<SecImageClass>();
+        ArrayList<agnosticThread> threads = new ArrayList<agnosticThread>();
+
+        for(int i = 0; i < numberOfThreads; i++)
+        {
+            SecImageClass secImageClass = new SecImageClass();
+            secImageClasses.add(secImageClass);
+            agnosticThread r = new agnosticThread(secImageClass, doneSignal, startSignal);
+            Thread thread = new Thread(r);
+            threads.add(r);
+            thread.start();
+        }
+
+        startSignal.countDown();
+
+        doneSignal.await();
+        boolean error = false;
+        agnosticThread ttemp = null;
+        for (int i = 0; i < threads.size(); i++)
+        {
+            ttemp = threads.get(i);
+            Log.i("Thread " + String.valueOf(i),"Results:");
+            for (int j = 0; j < 100; j++)
+            {
+                error = false;
+                if(ttemp.lengths[j] != len){
+                    Log.i("-","bytes not long enough");
+                    _errors.add("bytes not long enough");
+                    _failCount++;
+                    error = true;
+                }
+                if(ttemp.checks[j] != check){
+                    Log.i("-","zeroed out");
+                    _errors.add("zeroed out");
+                    _failCount++;
+                    error = true;
+                }
+                if(error == false)
+                    _successCount++;
+                //assertEquals("bytes not long enough", 3136, secImageClass.imageBytes.length);
+                //assertEquals("zeroed out", -22, secImageClass.imageBytes[847]);
+            }
+            Log.i("SUCCESS: ",String.valueOf(_successCount));
+            Log.i("----------------","--------------");
+            _successCount = 0;
+            _failCount = 0;
+
+        }
+
+    }
+
+    /**
+     * class to hold data and test
+     */
+    class SecImageClass
+    {
+        public byte[] imageBytes;
+        private SparseArray<String> modifiers = new SparseArray<String>();
+        private SparseArray<String> attributes = new SparseArray<String>();
+        private String symbolCode = "S*A*MFQN--*****";
+        private MilStdIconRenderer renderer = MilStdIconRenderer.getInstance();
+
+        public void setImageInfo()
+        {
+            attributes.put(MilStdAttributes.SymbologyStandard, "0");
+            ImageInfo imageInfo = renderer.RenderIcon(symbolCode, modifiers, attributes);
+            Bitmap bitmap = imageInfo.getImage();
+            ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+            bitmap.copyPixelsToBuffer(buffer);
+            imageBytes = buffer.array();
+        }
+
+    }
+
+
+
+    /**
+     * Thread for implementation agnostic testing of SEC Renderer,
+     * Creates 100 copies
+     */
+    class agnosticThread implements Runnable
+    {
+        byte[] checks = new byte[100];
+        int[] lengths = new int[100];
+        SecImageClass mImage;
+        CountDownLatch mDoneSignal;
+        CountDownLatch mStartSignal;
+
+
+        public agnosticThread(SecImageClass image, CountDownLatch doneSignal,
+                              CountDownLatch startSignal)
+        {
+            mImage = image;
+            mDoneSignal = doneSignal;
+            mStartSignal = startSignal;
+        }
+
+
+        /**
+         * Starts executing the active part of the class' code. This method is
+         * called when a thread is started that has been created with a class which
+         * implements {@code Runnable}.
+         */
+        @Override
+        public void run()
+        {
+            try
+            {
+                mStartSignal.await();
+                for(int i = 0; i < 100; i++)
+                {
+                    mImage.setImageInfo();
+                    lengths[i] = mImage.imageBytes.length;
+                    checks[i] = (mImage.imageBytes[847]);
+                }
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+            mDoneSignal.countDown();
+        }
     }
     
 

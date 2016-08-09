@@ -719,8 +719,9 @@ public final class SECWebRenderer /* extends Applet */ {
     }
 
     /**
-	 * Renders all multi-point symbols, creating MilStdSymbol that contains the
+	 * Renders all MilStd 2525 multi-point symbols, creating MilStdSymbol that contains the
 	 * information needed to draw the symbol on the map.
+     * DOES NOT support RADARC, CAKE, TRACK etc...
 	 * ArrayList<Point2D> milStdSymbol.getSymbolShapes.get(index).getPolylines()
 	 * and 
 	 * ShapeInfo = milStdSymbol.getModifierShapes.get(index). 
@@ -779,18 +780,13 @@ public final class SECWebRenderer /* extends Applet */ {
 		MilStdSymbol mSymbol = null;
 		try 
 		{
-			
-			if (JavaRendererUtilities.is3dSymbol(symbolCode, modifiers)==false) 
-            {
-                mSymbol = MultiPointHandler.RenderSymbolAsMilStdSymbol(id, name, description, symbolCode, 
-                		controlPoints, scale, bbox, modifiers, attributes, symStd);
-			}
-
-		} 
+			mSymbol = MultiPointHandler.RenderSymbolAsMilStdSymbol(id, name, description, symbolCode,
+                    controlPoints, scale, bbox, modifiers, attributes, symStd);
+		}
 		catch (Exception ea) 
 		{
 			mSymbol=null;
-			ErrorLogger.LogException("SECRenderer", "RenderMultiPointAsMilStdSymbol", ea, Level.WARNING);
+			ErrorLogger.LogException("SECRenderer", "RenderMultiPointAsMilStdSymbol" + " - " + symbolCode, ea, Level.WARNING);
 		}
 		
 		//System.out.println("RenderMultiPointAsMilStdSymbol exit");

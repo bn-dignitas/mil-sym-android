@@ -32,15 +32,14 @@ public class SymbolUtilities
      * @param strSymbolID - IN - A 15 character MilStd code
      * @return A properly formated basic symbol ID
      */
-    public static
-            String getBasicSymbolID(String strSymbolID)
+    public static String getBasicSymbolID(String strSymbolID)
     {
         try
         {
             StringBuilder sb = new StringBuilder();
-            if ((strSymbolID != null) && (strSymbolID.equals("") == false) && (strSymbolID.length() == 15))
+            if ((strSymbolID != null) && (strSymbolID.length() == 15))
             {
-                // Check to make sure it is a tacitcal graphic symbol.
+                // Check to make sure it is a tactical graphic symbol.
                 if ((isWeather(strSymbolID)) || (isBasicShape(strSymbolID)))
                 {
                     return strSymbolID;
@@ -76,7 +75,36 @@ public class SymbolUtilities
                 	else if(isInstallation(strSymbolID))
                 		sb.append("H****");
                 	else
-                		sb.append("*****");
+                    {
+                        sb.append("*****");
+                        UnitDefTable udt = UnitDefTable.getInstance();
+                        String temp = sb.toString();
+                        for(int i = 0; i < 2; i++)
+                        {
+                            if(udt.hasUnitDef(temp,i)==true)
+                            {
+                                return temp;
+                            }
+                            else
+                            {
+                                temp = temp.substring(0,10) + "H****";
+                                if(udt.hasUnitDef(temp,i)==true)
+                                {
+                                    return temp;
+                                }
+                                else
+                                {
+                                    temp = temp.substring(0,10) + "MO***";
+                                    if(udt.hasUnitDef(temp,i)==true)
+                                    {
+                                        return temp;
+                                    }
+                                }
+                            }
+                            temp = temp.substring(0,10) + "*****";
+                        }
+
+                    }
 
                     return sb.toString();
                 }
@@ -97,19 +125,55 @@ public class SymbolUtilities
         return "";
     }
 
-    public static
-            String reconcileSymbolID(String symbolID)
+    /**
+     * Only for renderer use.  Please use getBasicSymbolID.
+     * @param strSymbolID
+     * @return
+     */
+    public static String getBasicSymbolIDStrict(String strSymbolID)
+    {
+        StringBuilder sb = new StringBuilder();
+        char scheme = strSymbolID.charAt(0);
+        if(strSymbolID != null && strSymbolID.length() == 15)
+        {
+            if (scheme == 'G')
+            {
+                sb.append(strSymbolID.charAt(0));
+                sb.append("*");
+                sb.append(strSymbolID.charAt(2));
+                sb.append("*");
+                sb.append(strSymbolID.substring(4, 10));
+                sb.append("****X");
+            }
+            else if (scheme != 'W' && scheme != 'B' && scheme != 'P')
+            {
+                sb.append(strSymbolID.charAt(0));
+                sb.append("*");
+                sb.append(strSymbolID.charAt(2));
+                sb.append("*");
+                sb.append(strSymbolID.substring(4, 10));
+                sb.append("*****");
+            }
+            else
+            {
+                return strSymbolID;
+            }
+            return sb.toString();
+        }
+        return strSymbolID;
+    }
+
+    public static String reconcileSymbolID(String symbolID)
     {
         return reconcileSymbolID(symbolID, false);
     }
 
-    public static
-            String reconcileSymbolID(String symbolID, boolean isMultiPoint)
+    public static String reconcileSymbolID(String symbolID, boolean isMultiPoint)
     {
         StringBuilder sb = new StringBuilder("");
         char codingScheme = symbolID.charAt(0);
 
-        if (symbolID.startsWith("BS_") || symbolID.startsWith("BBS_"))
+        if (symbolID.startsWith("BS_") || symbolID.startsWith("BBS_") || symbolID.startsWith("PBS_"))
         {
             return symbolID;
         }
@@ -321,7 +385,7 @@ public class SymbolUtilities
     public static
             Boolean hasValidAffiliation(String SymbolID)
     {
-        if (SymbolID != null && SymbolID.length() >= 10)
+        if (SymbolID != null && SymbolID.length() >= 10 && isWeather(SymbolID) == false)
         {
             char affiliation = SymbolID.charAt(1);
             if (affiliation == 'P'
@@ -549,7 +613,7 @@ public class SymbolUtilities
      * Given date, return character String representing which NATO time zone
      * you're in.
      *
-     * @param hour
+     * @param time
      * @return
      */
     private static
@@ -942,13 +1006,12 @@ public class SymbolUtilities
      * @param symStd - like RendererSettings.Symbology_2525C
      * @return
      */
-    public static
-            boolean canSymbolHaveModifier(String symbolID, int tgModifier, int symStd)
+    public static boolean canSymbolHaveModifier(String symbolID, int tgModifier, int symStd)
     {
         String basic = null;
         SymbolDef sd = null;
         boolean returnVal = false;
-
+        String modCode = ModifiersTG.getModifierLetterCode(tgModifier);
         try
         {
 
@@ -971,7 +1034,7 @@ public class SymbolUtilities
                             returnVal = true;
                             break;
                         case SymbolDef.DRAW_CATEGORY_LINE://air corridor
-                        	if(sd.getModifiers().indexOf(tgModifier + ".") > -1)
+                        	if(sd.getModifiers().indexOf(modCode + ".") > -1)
                         		returnVal = true;
                             break;
                         default:
@@ -992,7 +1055,7 @@ public class SymbolUtilities
                 }
                 else
                 {
-                    if (sd.getModifiers().indexOf(tgModToString(tgModifier)) > -1)
+                    if (sd.getModifiers().indexOf(modCode + ".") > -1)
                     {
                         returnVal = true;
                     }
@@ -1004,49 +1067,11 @@ public class SymbolUtilities
         }
         catch (Exception exc)
         {
-            ErrorLogger.LogException("SymbolUtilties", "canSymbolHaveModifier", exc);
+            ErrorLogger.LogException("SymbolUtilities", "canSymbolHaveModifier", exc);
         }
         return returnVal;
     }
-    
-    private static String tgModToString(int tgModifier)
-    {
-    	switch(tgModifier)
-    	{
-    		case ModifiersTG.T_UNIQUE_DESIGNATION_1:
-    			return "T.";
-    		case ModifiersTG.T1_UNIQUE_DESIGNATION_2:
-    			return "T1.";
-    		case ModifiersTG.H_ADDITIONAL_INFO_1:
-    			return "H.";
-    		case ModifiersTG.H1_ADDITIONAL_INFO_2:
-    			return "H1.";
-    		case ModifiersTG.H2_ADDITIONAL_INFO_3:
-    			return "H2.";
-    		case ModifiersTG.N_HOSTILE:
-    			return "N.";
-    		case ModifiersTG.W_DTG_1:
-    			return "W.";
-    		case ModifiersTG.W1_DTG_2:
-    			return "W1.";
-    		case ModifiersTG.X_ALTITUDE_DEPTH:
-    			return "X.";
-    		case ModifiersTG.Y_LOCATION:
-    			return "Y.";
-    		case ModifiersTG.V_EQUIP_TYPE:
-    			return "V.";
-    		case ModifiersTG.Q_DIRECTION_OF_MOVEMENT:
-    			return "Q.";
-    		case ModifiersTG.S_OFFSET_INDICATOR:
-    			return "S.";
-    		case ModifiersTG.C_QUANTITY:
-    			return "C.";
-    		case ModifiersTG.B_ECHELON:
-    			return "B.";
-    		default:
-    			return "!";
-    	}
-    }
+
 
     /**
      * Gets line color used if no line color has been set. The color is
@@ -1056,8 +1081,7 @@ public class SymbolUtilities
      * @param symbolID
      * @return
      */
-    public static
-            Color getLineColorOfAffiliation(String symbolID)
+    public static Color getLineColorOfAffiliation(String symbolID)
     {
         Color retColor = null;
         String basicSymbolID = getBasicSymbolID(symbolID);
@@ -1087,6 +1111,10 @@ public class SymbolUtilities
                         && (basicSymbolID.equals("G*M*NR----****X") == true || //Radioactive Area
                         basicSymbolID.equals("G*M*NC----****X") == true || //Chemically Contaminated Area
                         basicSymbolID.equals("G*M*NB----****X") == true)) //Biologically Contaminated Area
+                {
+                    retColor = Color.BLACK;//0xffff00;
+                }
+                else if(SymbolUtilities.isEMSNaturalEvent(symbolID))
                 {
                     retColor = Color.BLACK;//0xffff00;
                 }
@@ -1822,7 +1850,7 @@ public class SymbolUtilities
     {
         if (symbolID != null && symbolID.length() >= 2)
         {
-            if (symbolID.startsWith("BS_") || symbolID.startsWith("BBS_"))
+            if (symbolID.startsWith("BS_") || symbolID.startsWith("BBS_") || symbolID.startsWith("PBS_"))
             {
                 return true;
             }
@@ -3239,132 +3267,6 @@ public class SymbolUtilities
         return false;
     } // End isSOF
 
-    /**
-     * @name isChangeOne
-     *
-     * @desc Returns true if the graphic is a change one graphic
-     *
-     * @param strSymbolID - IN - A basic MilStd2525B symbolID
-     * @return True if symbol is change 1, false otherwise.
-     */
-    public static
-            boolean isChangeOne(String strSymbolID)
-    {
-        try
-        {
-            String strBasicSymbolID = getBasicSymbolID(strSymbolID);
-            boolean blRetVal = (strBasicSymbolID.equals("G*F*ACFZ--****X")
-                    || strBasicSymbolID.equals("G*F*ACFFZ-****X")
-                    || strBasicSymbolID.equals("G*F*AP----****X")
-                    || strBasicSymbolID.equals("G*F*AXC---****X")
-                    || strBasicSymbolID.equals("G*F*AXS---****X")
-                    || isChangeOneCircular(strBasicSymbolID) || isChangeOneRectangular(strBasicSymbolID));
-            return blRetVal;
-        }
-        catch (Throwable t)
-        {
-            System.out.println(t);
-        }
-        return false;
-    } // End isChangeOne
-
-    /**
-     * @name isChangeOneRectangular
-     *
-     * @desc Returns true if the graphic is a Rectangular change one graphic
-     *
-     * @param strSymbolID - IN - A basic MilStd2525B symbolID
-     * @return True if symbol is change 1 rectangular, false otherwise.
-     */
-    public static
-            boolean isChangeOneRectangular(String strSymbolID)
-    {
-        try
-        {
-            String strBasicSymbolID = getBasicSymbolID(strSymbolID);
-            String[] arr = new String[]
-            {
-                "G*F*ATR---****X",
-                "G*F*ACSR--****X",
-                "G*F*ACAR--****X",
-                "G*F*ACFR--****X",
-                "G*F*ACNR--****X",
-                "G*F*ACPR--****X",
-                "G*F*ACRR--****X",
-                "G*F*AZIR--****X",
-                "G*F*AZXR--****X",
-                "G*F*AZSR--****X",
-                "G*F*AZCR--****X",
-                "G*F*AZDR--****X",
-                "G*F*AZFR--****X",
-                "G*F*AZZR--****X",
-                "G*F*AZBR--****X",
-                "G*F*AZVR--****X"
-            };
-            int arrLength = arr.length;
-            for (int i = 0; i < arrLength; i++)
-            {
-                if (arr[i].equals(strBasicSymbolID))
-                {
-                    return true;
-                }
-            }
-        }
-        catch (Throwable t)
-        {
-            System.out.println(t);
-        }
-        return false;
-    } // End isChangeOneRectangular
-
-    /**
-     * @name isChangeOneCircular
-     *
-     * @desc Returns true if the graphic is a Circular change one graphic
-     *
-     * @param strSymbolID - IN - A basic MilStd2525B symbolID
-     * @return True if symbol is change 1 Circular, false otherwise.
-     */
-    public static
-            boolean isChangeOneCircular(String strSymbolID)
-    {
-        try
-        {
-            String strBasicSymbolID = getBasicSymbolID(strSymbolID);
-            String[] arr = new String[]
-            {
-                "G*F*ATC---****X",
-                "G*F*ACSC--****X",
-                "G*F*ACAC--****X",
-                "G*F*ACFC--****X",
-                "G*F*ACNC--****X",
-                "G*F*ACRC--****X",
-                "G*F*AZIC--****X",
-                "G*F*AZXC--****X",
-                "G*F*AZSC--****X",
-                "G*F*AZCC--****X",
-                "G*F*AZDC--****X",
-                "G*F*AZFC--****X",
-                "G*F*AZZC--****X",
-                "G*F*AZBC--****X",
-                "G*F*AZVC--****X",
-                "G*F*ACPC--****X"
-            };
-            int arrLength = arr.length;
-            for (int i = 0; i < arrLength; i++)
-            {
-                if (arr[i].equals(strBasicSymbolID))
-                {
-                    return true;
-                }
-            }
-        }
-        catch (Throwable t)
-        {
-            System.out.println(t);
-        }
-        return false;
-    } // End isChangeOneCircular }}
 
     /**
      * @name isEquipment
@@ -3583,50 +3485,6 @@ public class SymbolUtilities
         return feintDummyInstallationIsOn;
     }
 
-    /**
-     *
-     * @param symbolID
-     * @return
-     * @deprecated Incomplete and unnecessary since we have XML files for B & C
-     */
-    public static
-            boolean is2525CSpecific(String symbolID)
-    {
-        String ID = getBasicSymbolID(symbolID);
-        try
-        {
-            // See if the feint dummy installation is on.
-            if (ID.startsWith("S"))
-            {
-                if (ID.equals("S*A*MV----*****") ||//VIP
-                        ID.equals("S*A*ME----*****"))//ESCORT
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else if (ID.startsWith("O"))
-            {
-                return false;
-            }
-            else if (ID.startsWith("E"))
-            {
-                return false;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        catch (Throwable t)
-        {
-            System.out.println(t);
-        }
-        return false;
-    }
 
     /**
      * has an 'H' in the 11th position Any symbol can have this character added
@@ -3810,8 +3668,8 @@ public class SymbolUtilities
         return "-";
     } // End GetSymbolModifier
 
-    public static
-            String getUnitAffiliationModifier(String symbolID, int symStd)
+
+    public static String getUnitAffiliationModifier(String symbolID, int symStd)
     {
         String textChar = null;
         char affiliation;
@@ -3950,8 +3808,7 @@ public class SymbolUtilities
         return hasAMmodifierWidth(symbolID, RendererSettings.getInstance().getSymbologyStandard());
     }
 
-    public static
-            Boolean hasAMmodifierWidth(String symbolID, int symStd)
+    public static Boolean hasAMmodifierWidth(String symbolID, int symStd)
     {
         SymbolDef sd = null;
         Boolean returnVal = false;
@@ -3977,14 +3834,12 @@ public class SymbolUtilities
         return returnVal;
     }
 
-    public static
-            Boolean hasANmodifier(String symbolID)
+    public static Boolean hasANmodifier(String symbolID)
     {
         return hasANmodifier(symbolID, RendererSettings.getInstance().getSymbologyStandard());
     }
 
-    public static
-            Boolean hasANmodifier(String symbolID, int symStd)
+    public static Boolean hasANmodifier(String symbolID, int symStd)
     {
         SymbolDef sd = null;
         Boolean returnVal = false;
@@ -4001,10 +3856,10 @@ public class SymbolUtilities
                 case SymbolDef.DRAW_CATEGORY_SECTOR_PARAMETERED_AUTOSHAPE:
                     returnVal = true;
                     break;
-                case SymbolDef.DRAW_CATEGORY_LINE://air corridor
-                	if(sd.getModifiers().indexOf(ModifiersTG.AM_DISTANCE + ".") > -1)
+                /*case SymbolDef.DRAW_CATEGORY_LINE://air corridor
+                	if(sd.getModifiers().indexOf(ModifiersTG.AN_AZIMUTH + ".") > -1)
                 		returnVal = true;
-                	break;
+                	break;//*/
                 default:
                     returnVal = false;
             }
@@ -4013,8 +3868,7 @@ public class SymbolUtilities
         return returnVal;
     }
 
-    public static
-            Boolean hasAMmodifierRadius(String symbolID)
+    public static Boolean hasAMmodifierRadius(String symbolID)
     {
         return hasAMmodifierRadius(symbolID, RendererSettings.getInstance().getSymbologyStandard());
     }
@@ -4053,12 +3907,11 @@ public class SymbolUtilities
      * @param strSymbolID - IN - The affiliation we want to change the ID to.
      * @return A string with the affiliation changed to affiliationID
      */
-    public static
-            String setAffiliation(String strSymbolID, String strAffiliationID)
+    public static String setAffiliation(String strSymbolID, String strAffiliationID)
     {
         try
         {
-            if (strSymbolID != null && strSymbolID.length() == 15
+            if (strSymbolID != null && strSymbolID.length() == 15 && isWeather(strSymbolID)==false
                     && strAffiliationID != null && strAffiliationID.length() == 1)
             {
                 String strChangedID = strSymbolID.substring(0, 1) + strAffiliationID.toUpperCase() + strSymbolID.substring(2, 15);
@@ -4131,8 +3984,7 @@ public class SymbolUtilities
      * @return A string with the status changed to statusID
      * @deprecated
      */
-    public static
-            String setStatus(String strSymbolID, String strStatusID)
+    public static String setStatus(String strSymbolID, String strStatusID)
     {
         // PlannedAnticipated, //A
         // Present //P

@@ -493,4 +493,13 @@ public class TGLight {
     public void set_UseDashArray(boolean value) {
         _useDashArray = value;
     }
+    private boolean _wasClipped=false;
+    public void set_WasClipped(boolean value)
+    {
+        _wasClipped=value;
+    }
+    public boolean get_WasClipped()
+    {
+        return _wasClipped;
+    }
 }

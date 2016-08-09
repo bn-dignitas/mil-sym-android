@@ -127,6 +127,8 @@ public final class arraysupport
             POINT2 pt0 = new POINT2(), pt1 = new POINT2();
 
             lCount = countsupport.GetFORTLCountDouble(pLinePoints, lineType, vblSaveCounter);
+            int numGlyphs=0;
+            double dGlyphSize=0;
 
             pSpikePoints = new POINT2[lCount];
             lineutility.InitializePOINT2Array(pSpikePoints);
@@ -145,42 +147,56 @@ public final class arraysupport
                     nCounter++;
                     continue;
                 }
-                for (k = 0; k < dLengthSegment / 20 - 1; k++)
+                numGlyphs=(int)(dLengthSegment/dIncrement);
+                //dGlyphSize=dIncrement/2;
+                dGlyphSize=10;
+                dIncrement=(dLengthSegment/numGlyphs);
+                if(dIncrement>25)
+                {
+                    dIncrement=25;
+                    numGlyphs=(int)(dLengthSegment/dIncrement);                    
+                }
+                
+                //for (k = 0; k < dLengthSegment / 20 - 1; k++)
+                for (k = 0; k < numGlyphs; k++)
                 {
                     pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j + 1], pLinePoints[j], -k * dIncrement, 0);
                     nCounter++;
-                    pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j + 1], pLinePoints[j], -k * dIncrement - 10, 0);
+                    //pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j + 1], pLinePoints[j], -k * dIncrement - 10, 0);
+                    pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j + 1], pLinePoints[j], -k * dIncrement - dIncrement/2, 0);
                     nCounter++;
                     pt0 = new POINT2(pSpikePoints[nCounter - 1]);
-                    pt1 = lineutility.ExtendLineDouble(pLinePoints[j], pSpikePoints[nCounter - 1], 10);
+                    //pt1 = lineutility.ExtendLineDouble(pLinePoints[j], pSpikePoints[nCounter - 1], 10);
+                    pt1 = lineutility.ExtendLineDouble(pLinePoints[j], pSpikePoints[nCounter - 1], dIncrement/2);
                     //the spikes
                     if (pLinePoints[j].x > pLinePoints[j + 1].x) {
-                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 3, 10);
+                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 3, dGlyphSize);
                         nCounter++;
-                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 3, 10);
+                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 3, dGlyphSize);
                         nCounter++;
                     }
                     if (pLinePoints[j].x < pLinePoints[j + 1].x) {
-                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 2, 10);
+                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 2, dGlyphSize);
                         nCounter++;
-                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 2, 10);
+                        pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 2, dGlyphSize);
                         nCounter++;
                     }
                     if (pLinePoints[j].x == pLinePoints[j + 1].x) {
                         if (pLinePoints[j].y < pLinePoints[j + 1].y) {
-                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 1, 10);
+                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 1, dGlyphSize);
                             nCounter++;
-                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 1, 10);
+                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 1, dGlyphSize);
                             nCounter++;
                         }
                         if (pLinePoints[j].y > pLinePoints[j + 1].y) {
-                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 0, 10);
+                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt0, 0, dGlyphSize);
                             nCounter++;
-                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 0, 10);
+                            pSpikePoints[nCounter] = lineutility.ExtendDirectedLine(pLinePoints[j], pLinePoints[j + 1], pt1, 0, dGlyphSize);
                             nCounter++;
                         }
                     }
-                    pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j], pSpikePoints[nCounter - 3], 10, 0);
+                    //pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j], pSpikePoints[nCounter - 3], 10, 0);
+                    pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j], pSpikePoints[nCounter - 3], dIncrement/2, 0);
                     nCounter++;
                 }//end for k
                 pSpikePoints[nCounter] = new POINT2(pLinePoints[j + 1]);
@@ -280,7 +296,7 @@ public final class arraysupport
             POINT2[] pSpikePoints = null;
             POINT2 pt0;
             double dSpikeSize = 0;
-            int limit = 0;
+            int limit = 0, numSpikes=0;;
 
             lCount = countsupport.GetFORTLCountDouble(pLinePoints, lineType, vblSaveCounter);
             pSpikePoints = new POINT2[lCount];
@@ -290,14 +306,21 @@ public final class arraysupport
                 dLengthSegment = lineutility.CalcDistanceDouble(pLinePoints[j], pLinePoints[j + 1]);
                 dIncrement = 20;
                 dSpikeSize = 10;
-                limit = (int) (dLengthSegment / dIncrement) - 1;
-                if (limit < 1) {
-                    pSpikePoints[nCounter] = new POINT2(pLinePoints[j]);
-                    nCounter++;
-                    pSpikePoints[nCounter] = new POINT2(pLinePoints[j + 1]);
-                    nCounter++;
-                    continue;
-                }
+//  diagnostic
+                numSpikes=(int)Math.round((dLengthSegment-10)/dIncrement);
+                dIncrement=dLengthSegment/numSpikes;
+                if(dIncrement>25)
+                    dIncrement=25;
+                //limit = (int) (dLengthSegment / dIncrement) - 1;
+                limit = numSpikes - 1;
+//                if (limit < 1) {
+//                    pSpikePoints[nCounter] = new POINT2(pLinePoints[j]);
+//                    nCounter++;
+//                    pSpikePoints[nCounter] = new POINT2(pLinePoints[j + 1]);
+//                    nCounter++;
+//                    continue;
+//                }
+//  end diagnostic                
                 for (k = -1; k < limit; k++)//was k=0 to limit
                 {
                     pSpikePoints[nCounter] = lineutility.ExtendLine2Double(pLinePoints[j + 1], pLinePoints[j], -k * dIncrement - 30, 0);
@@ -1698,6 +1721,45 @@ public final class arraysupport
         }
         return pEllipsePoints;
     }
+    /**
+     * Calculate an ellipse and rotate about it's center by azimuth in degrees
+     * @param ptCenter
+     * @param ptWidth
+     * @param ptHeight
+     * @param azimuth
+     * @return 
+     */
+    private static POINT2[] getRotatedEllipsePoints(POINT2 ptCenter, POINT2 ptWidth, POINT2 ptHeight, double azimuth)
+    {        
+        POINT2[]pResultPoints=null;
+        try
+        {
+            POINT2[]pEllipsePoints=new POINT2[36];
+            int l=0,j=0;
+            double dFactor=0;
+            double a=lineutility.CalcDistanceDouble(ptCenter, ptWidth);
+            double b=lineutility.CalcDistanceDouble(ptCenter, ptHeight);
+            lineutility.InitializePOINT2Array(pEllipsePoints);
+            for (l = 1; l < 37; l++)
+            {
+                dFactor = (10.0 * l) * Math.PI / 180.0;
+                pEllipsePoints[l - 1].x = ptCenter.x + (int) (a * Math.cos(dFactor));
+                pEllipsePoints[l - 1].y = ptCenter.y + (int) (b * Math.sin(dFactor));
+                pEllipsePoints[l - 1].style = 0;
+            }
+            lineutility.RotateGeometryDouble(pEllipsePoints, 36, azimuth-90);
+            pResultPoints=new POINT2[37];
+            for(j=0;j<36;j++)
+                pResultPoints[j]=pEllipsePoints[j];
+            pResultPoints[36]=pEllipsePoints[0];
+        }
+        catch(Exception exc)
+        {
+            ErrorLogger.LogException(_className, "GetRotatedEllipsePoints",
+                    new RendererException("GetRotatedEllipsePoints", exc));
+        }
+        return pResultPoints;
+    }
     private static int GetLVOPoints(int linetype, POINT2[] pOriginalLinePoints, POINT2[] pLinePoints, int vblCounter)
     {
         int lEllipseCounter = 0;
@@ -2379,10 +2441,14 @@ public final class arraysupport
                     acCounter=5;
                     break;
                 case TacticalLines.BS_ELLIPSE:
+                case TacticalLines.PBS_ELLIPSE:
+                case TacticalLines.PBS_CIRCLE:
                     pt0=pLinePoints[0];//the center of the ellipse
                     pt1=pLinePoints[1];//the width of the ellipse
                     pt2=pLinePoints[2];//the height of the ellipse
-                    pLinePoints=getEllipsePoints(pt0,pt1,pt2);
+                    //pLinePoints=getEllipsePoints(pt0,pt1,pt2);
+                    double azimuth=pLinePoints[3].x;
+                    pLinePoints=getRotatedEllipsePoints(pt0,pt1,pt2,azimuth);
                     acCounter=37;
                     break;
                 case TacticalLines.OVERHEAD_WIRE:

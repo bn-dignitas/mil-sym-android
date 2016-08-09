@@ -789,5 +789,14 @@ public class MilStdSymbol
             ErrorLogger.LogException("MilStdSymbol", "setSymbolID" + " - Did not fall under TG or FE", e);
         }
     }	// End set SymbolID
+    private boolean _wasClipped=false;
+    public void set_WasClipped(boolean value)
+    {
+        _wasClipped=value;
+    }
+    public boolean get_WasClipped()
+    {
+        return _wasClipped;
+    }
 
 }

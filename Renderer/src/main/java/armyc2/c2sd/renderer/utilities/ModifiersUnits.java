@@ -418,4 +418,105 @@ public class ModifiersUnits {
         return list;
     }
 
+    /**
+     *
+     * @param modifier like ModifiersTG.C_QUANTITY
+     * @return modifier name based on mofidier constants
+     */
+    public static String getModifierName(int modifier)
+    {
+        switch(modifier)
+        {
+            //case A_SYMBOL_ICON:
+            //    return "Symbol Icon";
+            case B_ECHELON:
+                return "Echelon";
+            case C_QUANTITY:
+                return "Quantity";
+            //case D_TASK_FORCE_INDICATOR:
+            //    return "Task Force Indicator";
+            //case E_FRAME_SHAPE_MODIFIER:
+            //    return "Frame Shape Modifier";
+            case F_REINFORCED_REDUCED:
+                return "Reinforce Reduced";
+            case G_STAFF_COMMENTS:
+                return "Staff Comments";
+            case H_ADDITIONAL_INFO_1:
+                return "Additional Info 1";
+            case H1_ADDITIONAL_INFO_2:
+                return "Additional Info 2";
+            case H2_ADDITIONAL_INFO_3:
+                return "Additional Info 3";
+            case J_EVALUATION_RATING:
+                return "Evaluation Rating";
+            case K_COMBAT_EFFECTIVENESS:
+                return "Combat Effectiveness";
+            case L_SIGNATURE_EQUIP:
+                return "Signature Equipment";
+            case M_HIGHER_FORMATION:
+                return "Higher Formation";
+            case N_HOSTILE:
+                return "Hostile";
+            case P_IFF_SIF:
+                return "IFF SIF";
+            case Q_DIRECTION_OF_MOVEMENT:
+                return "Direction of Movement";
+            case R_MOBILITY_INDICATOR:
+                return "Mobility Indicator";
+            case R2_SIGNIT_MOBILITY_INDICATOR:
+                return "Signals Intelligence Mobility Indicator";
+            //case S_HQ_STAFF_OR_OFFSET_INDICATOR:
+            //    return "HQ Staff / Offset Indicator";
+            //case S_OFFSET_INDICATOR:
+            //    return "Offset Indicator";
+            case T_UNIQUE_DESIGNATION_1:
+                return "Unique Designation 1";
+            case T1_UNIQUE_DESIGNATION_2:
+                return "Unique Designation 2";
+            case V_EQUIP_TYPE:
+                return "Equipment Type";
+            case W_DTG_1:
+                return "Date Time Group 1";
+            case W1_DTG_2:
+                return "Date Time Group 2";
+            case X_ALTITUDE_DEPTH:
+                return "Altitude Depth";
+            case Y_LOCATION:
+                return "Location";
+            case Z_SPEED:
+                return "Speed";
+            case AA_SPECIAL_C2_HQ:
+                return "Special C2 HQ";
+            //case AB_FEINT_DUMMY_INDICATOR:
+            //    return "Feint Dummy Indicator";
+            //case AC_INSTALLATION:
+            //    return "Installation";
+            case AD_PLATFORM_TYPE:
+                return "Platform Type";
+            case AE_EQUIPMENT_TEARDOWN_TIME:
+                return "Equipment Teardown Time";
+            case AF_COMMON_IDENTIFIER:
+                return "Common Identifier";
+            //case AG_AUX_EQUIP_INDICATOR:
+            //    return "Auxiliary Equipment Indicator";
+            /*case AH_AREA_OF_UNCERTAINTY:
+                return "Area of Uncertainty";
+            case AI_DEAD_RECKONING_TRAILER:
+                return "Dead Reckoning Trailer";
+            case AJ_SPEED_LEADER:
+                return "Speed Leader";
+            case AK_PAIRING_LINE:
+                return "Pairing Line";
+            case AL_OPERATIONAL_CONDITION:
+                return "Operational Condition";
+            case AO_ENGAGEMENT_BAR:
+                return "Engagement Bar";//*/
+            case SCC_SONAR_CLASSIFICATION_CONFIDENCE:
+                return "Sonar Classification Confidence";
+            default:
+                return "";
+
+        }
+    }
+
 }

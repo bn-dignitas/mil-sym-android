@@ -99,7 +99,7 @@ public class SymbolDimensions {
 				case 850:
 				case 851:
                     //rect = RectUtilities.makeRectF(0,11,64.7f,56);//air space unknown
-                    dimensions[1]=6f;
+                    dimensions[1]=6.5f;
                     dimensions[2]=64.7f;
 					dimensions[3]=56f;
 					break;

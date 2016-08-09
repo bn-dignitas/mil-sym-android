@@ -235,7 +235,7 @@ public final class clsClipQuad {
      * @param clipBounds a quadrilateral or a polygon array that is the clipping area
      * @return the clipped array of points
      */
-    private static ArrayList<Point2D> clipSide(ArrayList<Point2D> pts,
+    private static ArrayList<Point2D> clipSide(TGLight tg, ArrayList<Point2D> pts,
             int index,
             ArrayList<Point2D> clipBounds) 
     {
@@ -314,6 +314,7 @@ public final class clsClipQuad {
                     {
                         ptsResult.add(intersectPt);
                     }
+                    tg.set_WasClipped(true);
                 }
                 else if(previousQuadrant!=clipBoundsQuadrant && currentQuadrant==clipBoundsQuadrant)//current inside, previous outside
                 {
@@ -324,6 +325,7 @@ public final class clsClipQuad {
                         ptsResult.add(intersectPt);
                     }
                     ptsResult.add(current);
+                    tg.set_WasClipped(true);
                 }
                 else if(previousQuadrant!=clipBoundsQuadrant && currentQuadrant!=clipBoundsQuadrant)
                     continue;
@@ -662,9 +664,9 @@ public final class clsClipQuad {
             for(j=0;j<n-1;j++)
             {
                 if(j==0)
-                    poly=clipSide(polygon,j,clipBounds);
+                    poly=clipSide(tg,polygon,j,clipBounds);
                 else
-                    poly=clipSide(poly,j,clipBounds);
+                    poly=clipSide(tg,poly,j,clipBounds);
             }
             
             

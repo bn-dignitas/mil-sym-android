@@ -16,7 +16,7 @@ import armyc2.c2sd.graphics2d.*;
  */
 public class PointConversion implements IPointConversion {
 
-
+    double _scale = 0;
     int _pixelWidth = 0;
     int _PixelHeight = 0;
     double _geoTop = 0;
@@ -85,6 +85,17 @@ public class PointConversion implements IPointConversion {
 //            else
 //                _pixelMultiplierX = Math.abs(_pixelMultiplierX);
             //end section
+
+        //for 2d
+        //40.075m meters is the circumference of the earth
+	//distanceInMeters=(distanceInDegrees/360)*40.075m meters
+        double distanceInDegrees=Math.abs(_geoRight - _geoLeft);
+        if(Math.abs(_geoRight - _geoLeft)>180)
+            distanceInDegrees=Math.abs(distanceInDegrees-360);
+	double distanceInMeters=(distanceInDegrees/360)*(40.075*1000000);
+        double scale = (_pixelWidth / distanceInMeters) * (1.0 / 96.0) * (1.0 / 39.37);
+        _scale = 1.0 / scale;
+
     }
 
     @Override

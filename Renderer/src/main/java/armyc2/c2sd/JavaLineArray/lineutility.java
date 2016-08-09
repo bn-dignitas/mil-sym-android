@@ -337,7 +337,11 @@ public final class lineutility {
             //if (deltaX == 0) 
             if (Math.abs(deltaX) < 1) 
             {
-                deltaX = 1;
+                //deltaX = 1;
+                if(deltaX>=0)
+                    deltaX=1;
+                else
+                    deltaX=-1;
                 result = 1;
             }
             deltaY = firstLinePoint.y - lastLinePoint.y;
@@ -429,7 +433,11 @@ public final class lineutility {
             //if (deltaX == 0)
             if (Math.abs(deltaX) < 1) 
             {
-                deltaX = 1;
+                //deltaX = 1;
+                if(deltaX>=0)
+                    deltaX=1;
+                else
+                    deltaX=-1;
                 result = false;
             }
 
@@ -4129,6 +4137,28 @@ public final class lineutility {
         {
             pLinePoints[j] = intersectPoints.get(j);
         }
+    }
+    public static ArrayList<POINT2> getDeepCopy(ArrayList<POINT2>pts)
+    {
+        ArrayList<POINT2>deepCopy=null;
+        try
+        {
+            if(pts == null || pts.isEmpty())
+                return pts;
+            deepCopy=new ArrayList();
+            int j=0;
+            POINT2 pt=null;
+            for(j=0;j<pts.size();j++)
+            {                
+                pt=new POINT2(pts.get(j).x,pts.get(j).y,pts.get(j).style);
+                deepCopy.add(pt);
+            }
+        }
+        catch (Exception exc) {
+            ErrorLogger.LogException(_className, "getDeepCopy",
+                    new RendererException("Failed inside getDeepCopy", exc));
+        }
+        return deepCopy;
     }
 
 }//end lineutility

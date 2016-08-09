@@ -4,7 +4,7 @@
 
      <groupId>sec.web.renderer</groupId>
      <artifactId>mil-sym-android-parent</artifactId>
-     <version>0.0.75</version>
+     <version>0.1.9</version>
      <packaging>pom</packaging>
   
      <name>mil-sym-android Master Pom</name>

@@ -78,8 +78,12 @@ public class RendererSettings{
     private static int _TextRenderMethod = 1;
     
     private static int _SymbolOutlineWidth = 3;
-    
-    
+
+    /**
+     * Collapse labels for fire support areas when the symbol isn't large enough to show all
+     * the labels.
+     */
+    private static boolean _AutoCollapseModifiers = true;
 
     /**
      * If true (default), when HQ Staff is present, location will be indicated by the free
@@ -293,6 +297,16 @@ public class RendererSettings{
     {
         return _UseLineInterpolation;
     }
+
+    /**
+     * Collapse Modifiers for fire support areas when the symbol isn't large enough to show all
+     * the labels.  Identifying label will always be visible.  Zooming in, to make the symbol larger,
+     * will make more modifiers visible.  Resizing the symbol can also make more modifiers visible.
+     * @param value
+     */
+    public void setAutoCollapseModifiers(boolean value) {_AutoCollapseModifiers = value;}
+
+    public boolean getAutoCollapseModifiers() {return _AutoCollapseModifiers;}
 
     /**
      * determines what kind of java objects will be generated when processing

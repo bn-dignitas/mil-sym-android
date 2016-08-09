@@ -721,7 +721,8 @@ public final class clsUtility {
             {
                 ptLast=new POINT2(tg.Pixels.get(j-1));
                 ptCurrent=new POINT2(tg.Pixels.get(j));
-                if(ptCurrent.x==ptLast.x && ptCurrent.y==ptLast.y)
+                //if(ptCurrent.x==ptLast.x && ptCurrent.y==ptLast.y)
+                if (Math.abs(ptCurrent.x - ptLast.x)<0.5 && Math.abs(ptCurrent.y - ptLast.y)<0.5)
                 {
                     if(tg.Pixels.size()>minSize)
                     {

@@ -1339,6 +1339,11 @@ public final class utility {
         //compute channel point for axis of advance
         computePoint(pts,linetype);
         //utility.ClosePolygon(pts, linetype);
+        //"-84.102854,39.799488,-84.100343,39.801342"
+        //leftLongitude=-84.102854;
+        //rightLongitude=-84.100343;
+        //lowerLatitude=39.799488;
+        //upperLatitude=39.801342;
         IPointConversion converter = new PointConversion((int) displayWidth,
                 (int) displayHeight, upperLatitude, leftLongitude,
                 lowerLatitude, rightLongitude);
@@ -1365,10 +1370,49 @@ public final class utility {
         useDashArray=true;
         mss.setUseDashArray(useDashArray);
         mss.setSymbologyStandard(rev);
-        clsRenderer.renderWithPolylines(mss, converter, clipArea, context);
-
-        drawShapeInfosGE(g2d, mss.getSymbolShapes(),useDashArray,mss.getSymbolID());
-        drawShapeInfosText(g2d, mss.getModifierShapes());
+        
+        //diagnostic
+        boolean renderAsMilStdSymbol=false;
+        //uncomment this line to run RendermultiPointAsMilstdSymbol
+        //renderAsMilStdSymbol=true;
+        if(T.equalsIgnoreCase("renderAsMSS"))
+            renderAsMilStdSymbol=true;
+        if(!renderAsMilStdSymbol)
+        {
+            clsRenderer.renderWithPolylines(mss, converter, clipArea, context);                
+            drawShapeInfosGE(g2d, mss.getSymbolShapes(),useDashArray,mss.getSymbolID(),null);
+            drawShapeInfosText(g2d, mss.getModifierShapes(),null);
+        }
+        else
+        {
+            double sizeSquare = Math.abs(rightLongitude - leftLongitude);
+            if (sizeSquare > 180) {
+                sizeSquare = 360 - sizeSquare;
+            }
+            //end section
+            double scale = 541463 * sizeSquare;
+            String rectStr = getRectString(0, 0);
+            String controlPtsStr = controlPointsToString(pts2);
+            String altitudeMode = "";
+            SparseArray<String> modifiers = new SparseArray<String>();
+            SparseArray<String> attributes = new SparseArray<String>();
+            modifiers.put(ModifiersTG.T_UNIQUE_DESIGNATION_1, T);
+            modifiers.put(ModifiersTG.T1_UNIQUE_DESIGNATION_2, T1);
+            modifiers.put(ModifiersTG.AM_DISTANCE, AM);
+            modifiers.put(ModifiersTG.AN_AZIMUTH, AN);
+            modifiers.put(ModifiersTG.X_ALTITUDE_DEPTH, X);
+            modifiers.put(ModifiersTG.H1_ADDITIONAL_INFO_2, H1);
+            modifiers.put(ModifiersTG.W_DTG_1, W);
+            modifiers.put(ModifiersTG.W1_DTG_2, W1);
+            attributes.put(MilStdAttributes.FillColor, fillcolor);
+            attributes.put(MilStdAttributes.LineColor, linecolor);
+            attributes.put(MilStdAttributes.TextColor, textcolor);
+            attributes.put(MilStdAttributes.SymbologyStandard, Integer.toString(rev));
+            mss=sec.web.render.SECWebRenderer.RenderMultiPointAsMilStdSymbol("id", "name", "description", symbolCode, controlPtsStr, altitudeMode, scale, rectStr, modifiers, attributes, rev);
+            drawShapeInfosGE(g2d, mss.getSymbolShapes(),useDashArray,mss.getSymbolID(),converter);
+            drawShapeInfosText(g2d, mss.getModifierShapes(),converter);
+        }
+        //end diagnostic
 
         return strResult;
     }
@@ -1462,7 +1506,7 @@ public final class utility {
      * @param g
      * @param l
      */
-    private static void drawShapeInfosGE(Canvas canvas, List<ShapeInfo> l, boolean useDashedLines, String symbolId) {
+    private static void drawShapeInfosGE(Canvas canvas, List<ShapeInfo> l, boolean useDashedLines, String symbolId,IPointConversion converter) {
         try {
             Iterator i = l.iterator();
             int j = 0;
@@ -1485,22 +1529,36 @@ public final class utility {
                 if (spec.getShader() != null) {
                     paint.setShader(spec.getShader());
                 }
-
+                Point2D pt2d=null;
+                Point2D pixels=null;
                 if (spec.getFillColor() != null && spec.getFillColor().getAlpha() > 0) {
                     int n=polylines.size();
-                    //for (j = 0; j < polylines.size(); j++) 
                     for (j = 0; j < n; j++) 
                     {
                         path = new Path();
                         polyline = polylines.get(j);
-                        //poly=new java.awt.Polygon();
-                        path.moveTo((int) polyline.get(0).getX(), (int) polyline.get(0).getY());
+                        //diagnostic
+                        if(converter==null)
+                            path.moveTo((int) polyline.get(0).getX(), (int) polyline.get(0).getY());
+                        else
+                        {
+                            pt2d=polyline.get(0);
+                            pixels=converter.GeoToPixels(pt2d);
+                            path.moveTo((int) pixels.getX(), (int) pixels.getY());
+                        }
                         int t=polyline.size();
-                        //for (int k = 1; k < polyline.size(); k++) 
                         for (int k = 1; k < t; k++) 
                         {
-                            path.lineTo((int) polyline.get(k).getX(), (int) polyline.get(k).getY());
+                            if(converter==null)
+                                path.lineTo((int) polyline.get(k).getX(), (int) polyline.get(k).getY());
+                            else
+                            {
+                                pt2d=polyline.get(k);
+                                pixels=converter.GeoToPixels(pt2d);
+                                path.lineTo((int) pixels.getX(), (int) pixels.getY());
+                            }
                         }
+                        //end diagnostic
                         canvas.drawPath(path, paint);
                     }
                 }
@@ -1521,13 +1579,29 @@ public final class utility {
                     {
                         polyline = polylines.get(j);
                         path = new Path();
-                        path.moveTo((int) polyline.get(0).getX(), (int) polyline.get(0).getY());
+                        //diagnostic
+                        if(converter==null)
+                            path.moveTo((int) polyline.get(0).getX(), (int) polyline.get(0).getY());
+                        else
+                        {
+                            pt2d=polyline.get(0);
+                            pixels=converter.GeoToPixels(pt2d);
+                            path.moveTo((int) pixels.getX(), (int) pixels.getY());
+                        }
                         int t=polyline.size();
                         //for (int k = 1; k < polyline.size(); k++) 
                         for (int k = 1; k < t; k++) 
                         {
-                            path.lineTo((int) polyline.get(k).getX(), (int) polyline.get(k).getY());
+                            if(converter==null)
+                                path.lineTo((int) polyline.get(k).getX(), (int) polyline.get(k).getY());
+                            else
+                            {
+                                pt2d=polyline.get(k);
+                                pixels=converter.GeoToPixels(pt2d);
+                                path.lineTo((int) pixels.getX(), (int) pixels.getY());
+                            }
                         }
+                        //end diagnostic
                         canvas.drawPath(path, paint);
                     }
                 }
@@ -1547,7 +1621,7 @@ public final class utility {
      * @param g
      * @param l
      */
-    private static void drawShapeInfosText(Canvas g2d, List<ShapeInfo> l) {
+    private static void drawShapeInfosText(Canvas g2d, List<ShapeInfo> l, IPointConversion converter) {
         try {
             Iterator i = l.iterator();
             AffineTransform tx = null;
@@ -1563,6 +1637,11 @@ public final class utility {
                 TextLayout tl = spec.getTextLayout();
                 size = tl.getBounds().height;
                 position = spec.getGlyphPosition();
+                if(converter != null)
+                {
+                    position=spec.getModifierStringPosition();
+                    position=converter.GeoToPixels(position);
+                }
                 stringAngle = spec.getModifierStringAngle();
                 g2d.rotate((float) stringAngle, (float) position.getX(), (float) position.getY());
                 //draw the text twice
@@ -1757,10 +1836,12 @@ public final class utility {
             boolean twod=false;
             //twod=true;
             if(!twod)
-                strRender = sec.RenderSymbol("id", "name", "description", defaultText, controlPtsStr, altitudeMode, scale, rectStr, modifiers, attributes, format, rev);
+            {
+                strRender = sec.RenderSymbol("id", "name", "description", defaultText, controlPtsStr, altitudeMode, scale, rectStr, modifiers, attributes, format, rev);                
+            }
             else
                 strRender = sec.RenderSymbol2D("id", "name", "description", defaultText, controlPtsStr, (int)displayWidth, (int)displayHeight, rectStr, modifiers, attributes, format, rev);
-            
+                
             //WriteKMLFile(strRender);
             strResult = strRender;
         }

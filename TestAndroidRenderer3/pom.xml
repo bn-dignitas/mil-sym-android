@@ -5,13 +5,13 @@
      <parent>
 	  <groupId>sec.web.renderer</groupId>
 	  <artifactId>mil-sym-android-parent</artifactId>
-	  <version>0.0.75</version>
+	  <version>0.1.9</version>
      </parent>
 
 
      <groupId>${project.parent.groupId}</groupId>
      <artifactId>mil-sym-android-renderer-test3</artifactId>
-     <version>0.0.75</version>
+     <version>0.1.9</version>
      <packaging>apk</packaging>
   
      <name>mil-sym-android Renderer Test 3 app</name>

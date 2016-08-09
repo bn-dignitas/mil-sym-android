@@ -295,12 +295,12 @@ public class MilStdIconRenderer/* implements IIconRenderer */ {
         ImageInfo temp = null;
         if (SymbolUtilities.isTacticalGraphic(symbolID))
         {
-            String basicSymbolID = SymbolUtilities.getBasicSymbolID(symbolID);
+            String basicSymbolID = SymbolUtilities.getBasicSymbolIDStrict(symbolID);
             SymbolDef sd = SymbolDefTable.getInstance().getSymbolDef(basicSymbolID, symStd);
             if (sd == null)
             {
                 symbolID = SymbolUtilities.reconcileSymbolID(symbolID);
-                basicSymbolID = SymbolUtilities.getBasicSymbolID(symbolID);
+                basicSymbolID = SymbolUtilities.getBasicSymbolIDStrict(symbolID);
                 sd = SymbolDefTable.getInstance().getSymbolDef(basicSymbolID, symStd);
             }
 

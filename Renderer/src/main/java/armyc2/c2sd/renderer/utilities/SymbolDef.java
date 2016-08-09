@@ -210,7 +210,7 @@ public class SymbolDef {
            }
            return returnVal;
        } 
-       else if(_strBasicSymbolId.startsWith("BS_") || _strBasicSymbolId.startsWith("BBS_"))
+       else if(_strBasicSymbolId.startsWith("BS_") || _strBasicSymbolId.startsWith("BBS_") || _strBasicSymbolId.startsWith("PBS_"))
        {
            return true;
        }

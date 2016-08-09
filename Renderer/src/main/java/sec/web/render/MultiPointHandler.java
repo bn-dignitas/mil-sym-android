@@ -345,78 +345,83 @@ public class MultiPointHandler {
         }
 
         String id = SymbolUtilities.getBasicSymbolID(symbolID);
-        if (id.equals("G*T*F-----****X")
-                || id.equals("G*F*LCC---****X") ||//CFL
-                id.equals("G*G*GLB---****X")
-                || id.equals("G*G*GLF---****X")
-                || id.equals("G*G*GLC---****X")
-                || id.equals("G*G*GAF---****X")
-                || id.equals("G*G*AAW---****X")
-                || id.equals("G*G*DABP--****X")
-                || id.equals("G*G*OLP---****X")
-                || id.equals("G*G*PY----****X")
-                || id.equals("G*G*PM----****X")
-                || id.equals("G*G*ALL---****X")
-                || id.equals("G*G*ALU---****X")
-                || id.equals("G*G*ALM---****X")
-                || id.equals("G*G*ALC---****X")
-                || id.equals("G*G*ALS---****X")
-                || id.equals("G*M*OFA---****X")
-                || id.equals("G*M*OGB---****X")
-                || id.equals("G*M*OGL---****X")
-                || id.equals("G*M*OGZ---****X")
-                || id.equals("G*M*OGF---****X")
-                || id.equals("G*M*OGR---****X")
-                || id.equals("G*M*OADU--****X")
-                || id.equals("G*M*OADC--****X")
-                || id.equals("G*M*OAR---****X")
-                || id.equals("G*M*OAW---****X")
-                || id.equals("G*M*OEF---****X") || //Obstacles Effect Fix
-                id.equals("G*M*OMC---****X")
-                || id.equals("G*M*OWU---****X")
-                || id.equals("G*M*OWS---****X")
-                || id.equals("G*M*OWD---****X")
-                || id.equals("G*M*OWA---****X")
-                || id.equals("G*M*OWL---****X")
-                || id.equals("G*M*OWH---****X")
-                || id.equals("G*M*OWCS--****X")
-                || id.equals("G*M*OWCD--****X")
-                || id.equals("G*M*OWCT--****X")
-                || id.equals("G*M*OHO---****X")
-                || id.equals("G*M*BDD---****X") || //Bypass Difficult
+        if(id.equals("G*T*F-----****X") || 
+                id.equals("G*F*LCC---****X") ||//CFL
+                id.equals("G*G*GLB---****X") || 
+                id.equals("G*G*GLF---****X") || 
+                id.equals("G*G*GLC---****X") || 
+                id.equals("G*G*GAF---****X") || 
+                id.equals("G*G*AAW---****X") || 
+                id.equals("G*G*DABP--****X") || 
+                id.equals("G*G*OLP---****X") || 
+                id.equals("G*G*PY----****X") || 
+                id.equals("G*G*PM----****X") || 
+                id.equals("G*G*ALL---****X") || 
+                id.equals("G*G*ALU---****X") || 
+                id.equals("G*G*ALM---****X") || 
+                id.equals("G*G*ALC---****X") || 
+                id.equals("G*G*ALS---****X") || 
+                id.equals("G*G*SLB---****X") || 
+                id.equals("G*G*SLH---****X") || 
+                id.equals("G*G*GAY---****X") ||
+                id.equals("G*M*OFA---****X") || 
+                id.equals("G*M*OGB---****X") || 
+                id.equals("G*M*OGL---****X") || 
+                id.equals("G*M*OGZ---****X") || 
+                id.equals("G*M*OGF---****X") || 
+                id.equals("G*M*OGR---****X") || 
+                id.equals("G*M*OADU--****X") || 
+                id.equals("G*M*OADC--****X") || 
+                id.equals("G*M*OAR---****X") || 
+                id.equals("G*M*OAW---****X") || 
+                id.equals("G*M*OEF---****X") ||  //Obstacles Effect Fix
+                id.equals("G*M*OMC---****X") || 
+                id.equals("G*M*OWU---****X") || 
+                id.equals("G*M*OWS---****X") || 
+                id.equals("G*M*OWD---****X") || 
+                id.equals("G*M*OWA---****X") || 
+                id.equals("G*M*OWL---****X") || 
+                id.equals("G*M*OWH---****X") || 
+                id.equals("G*M*OWCS--****X") || 
+                id.equals("G*M*OWCD--****X") || 
+                id.equals("G*M*OWCT--****X") || 
+                id.equals("G*M*OHO---****X") || 
+                id.equals("G*M*BDD---****X") || //Bypass Difficult
                 id.equals("G*M*BCD---****X") || //Ford Difficult
                 id.equals("G*M*BCE---****X") || //Ford Easy
-                id.equals("G*M*SL----****X")
-                || id.equals("G*M*SP----****X")
-                || id.equals("G*M*NR----****X")
-                || id.equals("G*M*NB----****X")
-                || id.equals("G*M*NC----****X")
-                || id.equals("G*F*ACNI--****X")
-                || id.equals("G*F*ACNR--****X")
-                || id.equals("G*F*ACNC--****X")
-                || id.equals("G*F*AKBC--****X")
-                || id.equals("G*F*AKBI--****X")
-                || id.equals("G*F*AKBR--****X")
-                || id.equals("G*F*AKPC--****X")
-                || id.equals("G*F*AKPI--****X")
-                || id.equals("G*F*AKPR--****X")
-                || id.equals("G*F*LT----****X")
-                || id.equals("G*F*LTS---****X")
-                || id.equals("G*G*SAE---****X")
-                || //id.equals("G*G*SLA---****X") || //Ambush
-                id.equals("G*S*LRA---****X")
-                || id.equals("G*S*LRM---****X")
-                || id.equals("G*S*LRO---****X")
-                || id.equals("G*S*LRT---****X")
-                || id.equals("G*S*LRW---****X")
-                || id.equals("G*T*Q-----****X")
-                || id.equals("G*T*E-----****X")
-                || id.equals("G*T*F-----****X") || //Tasks Fix
+                id.equals("G*M*SL----****X") || 
+                id.equals("G*M*SP----****X") || 
+                id.equals("G*M*NR----****X") || 
+                id.equals("G*M*NB----****X") || 
+                id.equals("G*M*NC----****X") || 
+                id.equals("G*F*ACNI--****X") || 
+                id.equals("G*F*ACNR--****X") || 
+                id.equals("G*F*ACNC--****X") || 
+                id.equals("G*F*AKBC--****X") || 
+                id.equals("G*F*AKBI--****X") || 
+                id.equals("G*F*AKBR--****X") || 
+                id.equals("G*F*AKPC--****X") || 
+                id.equals("G*F*AKPI--****X") || 
+                id.equals("G*F*AKPR--****X") || 
+                id.equals("G*F*LT----****X") || 
+                id.equals("G*F*LTS---****X") || 
+                id.equals("G*G*SAE---****X") || 
+                //id.equals("G*G*SLA---****X") || //Ambush
+                id.equals("G*S*LRA---****X") || 
+                id.equals("G*S*LRM---****X") || 
+                id.equals("G*S*LRO---****X") || 
+                id.equals("G*S*LRT---****X") || 
+                id.equals("G*S*LRW---****X") || 
+                id.equals("G*T*Q-----****X") || 
+                id.equals("G*T*E-----****X") || 
+                id.equals("G*T*F-----****X") || //Tasks Fix
                 id.equals("G*T*K-----****X") || //counterattack.
                 id.equals("G*T*KF----****X") || //counterattack by fire.
-                id.equals("G*M*ORP---****X")
-                || id.equals("G*M*ORS---****X")
-                || id.equals("G*T*A-----****X")) {
+                id.equals("G*G*PA----****X") || //AoA for Feint
+                id.equals("G*M*ORP---****X") ||
+                id.equals("G*M*ORS---****X") ||
+                id.equals("G*T*A-----****X"))
+        {
             return true;
         } else {
             return false;
@@ -476,7 +481,9 @@ public class MultiPointHandler {
             }
             POINT2 ul = new POINT2(left, top);
             POINT2 ur = new POINT2(right, top);
-            double widthInMeters = mdlGeodesic.geodesic_distance(ul, ur, null, null);
+            POINT2 lr = new POINT2(right, bottom);
+            //double widthInMeters = mdlGeodesic.geodesic_distance(ul, ur, null, null);
+            double widthInMeters = mdlGeodesic.geodesic_distance(ul, lr, null, null);
             double maxWidthInPixels = _maxPixelWidth;
             double minScale = (maxWidthInPixels / widthInMeters) * (1.0d / 96.0d) * (1.0d / 39.37d);
             minScale = 1.0d / minScale;
@@ -542,8 +549,16 @@ public class MultiPointHandler {
         //ArrayList<Point2D> pixels = new ArrayList<Point2D>();
         ArrayList<Point2D> geoCoords = new ArrayList<Point2D>();
         int len = coordinates.length;
+        //diagnostic create geoCoords here
+        Point2D coordsUL=null;
+        for (int i = 0; i < len; i++) 
+        {
+            String[] coordPair = coordinates[i].split(",");
+            Double latitude = Double.valueOf(coordPair[1].trim()).doubleValue();
+            Double longitude = Double.valueOf(coordPair[0].trim()).doubleValue();
+            geoCoords.add(new Point2D.Double(longitude, latitude));
+        }
         ArrayList<POINT2> tgPoints = null;
-
         IPointConversion ipc = null;
 
         //Deutch moved section 6-29-11
@@ -625,20 +640,33 @@ public class MultiPointHandler {
 
                 bottomY = (int) temp.getY();
                 rightX = (int) temp.getX();
-                //diagnostic clipping does not work for large scales
-                if (scale > 10e6) {
+                //diagnostic clipping does not work at large scales
+                if(scale>10e6)
+                {
                     //get widest point in the AOI
-                    double midLat = 0;
-                    if (bottom < 0 && top > 0) {
-                        midLat = 0;
-                    } else if (bottom < 0 && top < 0) {
-                        midLat = top;
-                    } else if (bottom > 0 && top > 0) {
-                        midLat = bottom;
-                    }
-
-                    temp = ipc.GeoToPixels(new Point2D.Double(right, midLat));
-                    rightX = (int) temp.getX();
+//                    double midLat=0;
+//                    if(bottom<0 && top >0)
+//                        midLat=0;
+//                    else if(bottom<0 && top<0)
+//                        midLat=top;
+//                    else if(bottom>0 && top>0)
+//                        midLat=bottom;
+//                    Point2D rightMidLat=new Point2D.Double(right, midLat);
+//                    temp = ipc.GeoToPixels(rightMidLat);
+//                    rightX = (int)temp.getX();
+                    //diagnostic replace above by using a new ipc based on the coordinates MBR
+                    coordsUL=getGeoUL(geoCoords);
+                    temp = ipc.GeoToPixels(coordsUL);
+                    left=coordsUL.getX();
+                    top=coordsUL.getY();
+                    //shift the ipc to coordsUL origin so that conversions will be more accurate for large scales.
+                    ipc = new PointConverter(left, top, scale);
+                    //shift the rect to compenstate for the shifted ipc so that we can maintain the original clipping area.
+                    leftX -= (int)temp.getX();
+                    rightX -= (int)temp.getX();
+                    topY -= (int)temp.getY();
+                    bottomY -= (int)temp.getY();
+                    //end diagnostic
                 }
                 //end section
 
@@ -652,12 +680,12 @@ public class MultiPointHandler {
         }
         //end section
 
-        for (int i = 0; i < len; i++) {
-            String[] coordPair = coordinates[i].split(",");
-            Double latitude = Double.valueOf(coordPair[1].trim());
-            Double longitude = Double.valueOf(coordPair[0].trim());
-            geoCoords.add(new Point2D.Double(longitude, latitude));
-        }
+//        for (int i = 0; i < len; i++) {
+//            String[] coordPair = coordinates[i].split(",");
+//            Double latitude = Double.valueOf(coordPair[1].trim());
+//            Double longitude = Double.valueOf(coordPair[0].trim());
+//            geoCoords.add(new Point2D.Double(longitude, latitude));
+//        }
         if (ipc == null) {
             Point2D ptCoordsUL = getGeoUL(geoCoords);
             ipc = new PointConverter(ptCoordsUL.getX(), ptCoordsUL.getY(), scale);
@@ -1101,8 +1129,8 @@ public class MultiPointHandler {
             mSymbol.setSymbolShapes(shapes);
 
         } catch (Exception exc) {
-
             System.out.println(exc.getMessage());
+            System.out.println("Symbol Code: " + symbolCode);
             exc.printStackTrace();
         }
 
@@ -3113,13 +3141,46 @@ public class MultiPointHandler {
                 //basic shapes and buffered basic shapes.
                 //Return true for now.
                 return "true";
-            }else if (symbolID.startsWith("BBS_")) {
+            }
+			else if (symbolID.startsWith("BBS_")) {
             	ArrayList<Double> AM = symbol.getModifiers_AM_AN_X(ModifiersTG.AM_DISTANCE);
             	if(AM != null && AM.size() > 0 && AM.get(0) >= 0)
             		return "true";
             	else
             		return "false: Buffered Basic Shapes require a width (AM)";
-            } else {
+            } 
+			else if (symbolID.startsWith("PBS_")) 
+			{
+            	ArrayList<Double> AM = symbol.getModifiers_AM_AN_X(ModifiersTG.AM_DISTANCE);
+				
+				if(symbolID.equals("PBS_CIRCLE-----") || symbolID.equals("PBS_SQUARE-----"))
+                {
+                    if (AM != null && AM.size() > 0 && coordCount > 0)
+                    {
+                        return "true";
+                    }
+                    else
+                    {
+                        return ("false: " + symbolID + ", requires a width (AM) and 1 control point");
+                    }
+                }
+                else if(symbolID.equals("PBS_ELLIPSE----") || symbolID.equals("PBS_RECTANGLE--"))
+                {
+                    if (AM != null && AM.size() > 1 && coordCount > 0)
+                    {
+                        return "true";
+                    }
+                    else
+                    {
+                        return ("false: " + symbolID + ", requires 2 AM values, length and width (AM) and 1 control point");
+                    }
+                }
+				else
+				{
+					return ("false: " + symbolID + ", not a recognized code for a parametered basic shape.");
+				}
+            }
+			else {
                 return ("symbolID: \"" + symbolID + "\" not recognized.");
             }
 
